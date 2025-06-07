@@ -53,12 +53,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Il tuo ordine (n* prodotti):</p>
+                        <p>Il tuo ordine ({{ numProdottiCarrello }} prodotti):</p>
                         <!-- Tabella prodotti carello -->
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col"></th>
                                     <th scope="col">Prodotto</th>
                                     <th scope="col">Quantità</th>
                                     <th scope="col">Prezzo</th>
@@ -66,15 +65,16 @@
                             </thead>
                             <tbody>
                                 <!-- Esempio riga -->
-                                <tr>
-                                    <td scope="row">1</td>
-                                    <td>Prodotto 1</td>
-                                    <td>2</td>
-                                    <td>€20.00</td>
+                                <tr v-for="articolo in dettagliCarrello" :key="articolo.prodotto.id">
+                                    <td>{{ articolo.prodotto.nome }}</td>
+                                    <td>{{ quantitaCarrello[articolo.prodotto.id] }}</td>
+                                    <td>{{ articolo.prodotto.prezzo }}</td>
                                 </tr>
                             </tbody>
                         </table>
+                        <!-- /Tabella prodotti carello -->
                     </div>
+                    <!-- Bottoni salvataggio e chiusura -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
                         <button type="button" class="btn btn-primary">Procedi all'ordine</button>
