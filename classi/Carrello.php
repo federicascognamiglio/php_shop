@@ -18,12 +18,47 @@ class Carrello {
         if ($prodotto->quantita < $quantita) {
             throw new Exception("Quantità non disponibile per il prodotto: {$prodotto->nome}");
         }
-
+        
         if (isset($this->articoli[$prodotto->id])) {
             $this->articoli[$prodotto->id]['quantita'] += $quantita;
         } else {
             $this->articoli[$prodotto->id] = ['prodotto' => $prodotto, 'quantita' => $quantita];
         }
+    }
+
+    /**
+     * Diminuisce la quantità di un prodotto nel carrello.
+     *
+     * @param Prodotto $prodotto Il prodotto da diminuire.
+     * @param int $quantita La quantità da diminuire.
+     * 
+     * @throws Exception Se il prodotto non è presente nel carrello o se la quantità diventa negativa.
+     * 
+    */
+    public function decreaseProduct(Prodotto $prodotto, $quantita) {
+        if (!isset($this->articoli[$prodotto->id])) {
+            throw new Exception("Prodotto non presente nel carrello.");
+        }
+    
+        $this->articoli[$prodotto->id]['quantita'] -= $quantita;
+        if ($this->articoli[$prodotto->id]['quantita'] <= 1) {
+            unset($this->articoli[$prodotto->id]);
+        }
+    }
+    
+    /**
+     * Rimuove un prodotto dal carrello.
+     *
+     * @param int $id ID del prodotto da rimuovere.
+     * 
+     * @throws Exception Se il prodotto non è presente nel carrello.
+     * 
+    */
+    public function removeProduct($id) {
+        if (!isset($this->articoli[$id])) {
+            throw new Exception("Prodotto non presente nel carrello.");
+        }
+        unset($this->articoli[$id]);
     }
 
     /**
@@ -35,7 +70,7 @@ class Carrello {
     public function getSubtotal() {
         $subtotale = 0;
         foreach ($this->articoli as $articolo) {
-            $subtotale += $articolo['$prodotto']->prezzo * $articolo['quantita'];
+            $subtotale += $articolo['prodotto']->prezzo * $articolo['quantita'];
         }
         return $subtotale;
     }
@@ -68,20 +103,6 @@ class Carrello {
         return $subtotale;
     }
 
-    /**
-     * Rimuove un prodotto dal carrello.
-     *
-     * @param int $id ID del prodotto da rimuovere.
-     * 
-     * @throws Exception Se il prodotto non è presente nel carrello.
-     * 
-    */
-    public function removeProduct($id) {
-        if (!isset($this->articoli[$id])) {
-            throw new Exception("Prodotto non presente nel carrello.");
-        }
-        unset($this->articoli[$id]);
-    }
     
     /**
      * Restituisce tutti gli articoli nel carrello.
