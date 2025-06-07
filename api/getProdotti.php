@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../Prodotto.php';
+require_once '../classi/Prodotto.php';
 
 try {
     $prodotti = Prodotto::all();
