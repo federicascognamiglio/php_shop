@@ -13,6 +13,7 @@ createApp({
         const totaleCarrello = ref(0);
         const scontato = ref(false);
         const orderId = ref(null);
+        const dettagliOrdine = ref(null);
 
         // Oggetto reattivo per quantità specifica per prodotto nel carrello
         const quantitaCarrello = reactive({});
@@ -118,6 +119,22 @@ createApp({
             }
         };
 
+        // Funzione per caricare i dettagli di un ordine specifico
+        const caricaDettagliOrdine = async (id) => {
+            try {
+                const res = await fetch(`./api/getDettagliOrdine.php?id=${id}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    dettagliOrdine.value = data.ordine;
+                } else {
+                    console.error("Errore nel caricamento dettagli ordine:", data.message);
+                }
+            } catch (err) {
+                console.error("Errore rete:", err.message);
+            }
+        };
+
         // Funzione per salvare l'ordine
         const salvaOrdine = async () => {
             // Controlla se il carrello è vuoto
@@ -143,9 +160,13 @@ createApp({
                 const data = await res.json();
 
                 if (data.success) {
-                    orderId.value = data.order_id;
 
-                    console.log("Ordine completato! ID ordine: " + orderId.value);
+                    // Salva id ordine generato
+                    orderId.value = data.order_id;
+                    // Carica i dettagli dell'ordine
+                    await caricaDettagliOrdine(orderId.value);
+                    console.log("Dettagli ordine:", dettagliOrdine.value);
+                    console.log("Prodotti:", dettagliOrdine.value?.prodotti);
 
                     // Reset carrello
                     dettagliCarrello.value = {};
@@ -173,7 +194,6 @@ createApp({
             }
         };
 
-
         // Carica i prodotti e carrello al montaggio del componente
         onMounted(async () => {
             await caricaProdotti();
@@ -191,6 +211,7 @@ createApp({
             scontato,
             totaleCarrello,
             orderId,
+            dettagliOrdine,
             aggiornaCarrello,
             salvaOrdine,
         }
