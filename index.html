@@ -46,6 +46,11 @@
 
         <!-- Main -->
         <main>
+            <div v-if="messaggio" class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ messaggio }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <div class="container">
                 <h1 class="text-center mt-5">Benvenuto in PHP SHOP!</h1>
                 <p class="text-center mb-5">Qui puoi trovare una vasta gamma di prodotti.</p>

@@ -26,7 +26,7 @@ createApp({
                 prodotti.value = data
 
             } catch (error) {
-                messaggio.value = 'Errore nel caricamento prodotti' + error.message;
+                messaggio.value = 'Errore nel caricamento prodotti';
             }
         }
 
@@ -64,11 +64,11 @@ createApp({
                     }
                 }
             } catch (error) {
-                console.error('Errore caricamento carrello:', error);
+                messaggio.value='Errore caricamento carrello';
             }
         }
 
-        // Funzione per aggiungere o rimuovere un prodotto al carrello
+        // Funzione per aaggiornare carrello
         const aggiornaCarrello = async (idProdotto, azione) => {
             try {
                 const res = await fetch("./api/handleCarrello.php", {
@@ -112,10 +112,10 @@ createApp({
                     await caricaCarrello();
 
                 } else {
-                    console.log("Errore API:", data.message);
+                    messaggio.value="Errore API";
                 }
             } catch (error) {
-                console.log("Errore di rete:", error.message);
+                messaggio.value="Errore di rete";
             }
         };
 
@@ -128,10 +128,10 @@ createApp({
                 if (data.success) {
                     dettagliOrdine.value = data.ordine;
                 } else {
-                    console.error("Errore nel caricamento dettagli ordine:", data.message);
+                    messaggio.value="Errore nel caricamento dettagli ordine";
                 }
             } catch (err) {
-                console.error("Errore rete:", err.message);
+                messaggio.value="Errore rete";
             }
         };
 
@@ -165,8 +165,6 @@ createApp({
                     orderId.value = data.order_id;
                     // Carica i dettagli dell'ordine
                     await caricaDettagliOrdine(orderId.value);
-                    console.log("Dettagli ordine:", dettagliOrdine.value);
-                    console.log("Prodotti:", dettagliOrdine.value?.prodotti);
 
                     // Reset carrello
                     dettagliCarrello.value = {};
@@ -186,11 +184,11 @@ createApp({
                     orderModal.show();
 
                 } else {
-                    console.log("Errore: " + data.message);
+                    messaggio.value="Errore nel salvataggio dell'ordine";
                 }
 
             } catch (err) {
-                console.log("Errore di rete: " + data.message);
+                messaggio.value="Errore di rete";
             }
         };
 
