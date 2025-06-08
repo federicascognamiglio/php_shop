@@ -9,7 +9,7 @@ class Ordine {
     private $totale;
 
     /**
-     * Salva un nuovo ordine nel database.
+     * Salva un nuovo ordine nel database e aggiorna stock prodotto.
      * 
      * @param Carrello $carrello Il carrello da cui creare l'ordine.
      * 
@@ -48,6 +48,10 @@ class Ordine {
             }
     
             $conn->commit();
+
+            // Svuota carrello dopo salvataggio ordine
+            Carrello::clear();
+        
             return $ordine_id;
     
         } catch (Exception $e) {

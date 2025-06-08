@@ -103,6 +103,18 @@ class Carrello {
         return $subtotale;
     }
 
+    /**
+     * Ripulisce il carrello nella sessione.
+     *
+     * @return void
+     */
+    public static function clear() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    
+        unset($_SESSION['carrello']);
+    }
     
     /**
      * Restituisce tutti gli articoli nel carrello.

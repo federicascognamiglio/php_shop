@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 header('Content-Type: application/json');
 
 require_once '../classi/Carrello.php';
@@ -11,7 +7,6 @@ require_once '../classi/Prodotto.php';
 
 try {
     $input = file_get_contents('php://input');
-    error_log("Dati ricevuti: " . $input);
     $data = json_decode($input, true);
 
     // Validazione dei dati
@@ -51,8 +46,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    error_log("Errore in salvaOrdine.php: " . $e->getMessage());
-
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()

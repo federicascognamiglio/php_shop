@@ -130,9 +130,9 @@ createApp({
                 const data = await res.json();
         
                 if (data.success) {
-                    alert("Ordine completato! ID ordine: " + data.order_id);
+                    console.log("Ordine completato! ID ordine: " + data.order_id);
         
-                    // Reset carrello lato client (opzionale: fare anche chiamata per svuotarlo lato server)
+                    // Reset carrello lato client
                     dettagliCarrello.value = {};
                     for (const key in quantitaCarrello) delete quantitaCarrello[key];
                     numProdottiCarrello.value = 0;
@@ -141,11 +141,11 @@ createApp({
                     scontato.value = false;
         
                 } else {
-                    alert("Errore: " + data.message);
+                    console.log("Errore: " + data.message);
                 }
         
             } catch (err) {
-                alert("Errore di rete: " + err.message);
+                console.log("Errore di rete: " + data.message);
             }
         };
         
