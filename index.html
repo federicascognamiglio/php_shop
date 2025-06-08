@@ -57,20 +57,41 @@
                         <!-- Tabella prodotti carello -->
                         <table class="table">
                             <thead>
+                                <!-- Colonne -->
                                 <tr>
                                     <th scope="col">Prodotto</th>
                                     <th scope="col">Quantità</th>
-                                    <th scope="col">Prezzo</th>
+                                    <th scope="col">PU</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Esempio riga -->
+                                <!-- Righe -->
                                 <tr v-for="articolo in dettagliCarrello" :key="articolo.prodotto.id">
                                     <td>{{ articolo.prodotto.nome }}</td>
                                     <td>{{ quantitaCarrello[articolo.prodotto.id] }}</td>
-                                    <td>{{ articolo.prodotto.prezzo }}</td>
+                                    <td colspan="2">&euro; {{ articolo.prodotto.prezzo.toFixed(2) }}</td>
                                 </tr>
                             </tbody>
+                            <!-- Totale -->
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="fw-bold">Subtotale</td>
+                                    <td class="fw-bold">&euro; {{ (subtotaleCarrello ?? 0).toFixed(2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-danger fw-bold">Sconto</td>
+                                    <td class="text-danger fw-bold">
+                                        {{ scontato ? `- 10%` : 'Nessuno' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="fw-bold">Totale</td>
+                                    <td class="fw-bold">
+                                        &euro; {{ (totaleCarrello ?? 0).toFixed(2) }}
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
                         <!-- /Tabella prodotti carello -->
                     </div>
@@ -101,13 +122,18 @@
                                     <span>&euro; {{ prodotto.prezzo.toFixed(2) }}</span>
                                 </div>
                                 <p class="text-muted">{{ prodotto.quantita }} disponibili</p>
-                                <div class="d-flex">
+                                <!-- Bottoni di aggiunta / rimozione dal carrello -->
+                                <p v-if="quantitaCarrello[prodotto.id] >= prodotto.quantita" class="text-danger fs-6">
+                                    Hai raggiunto la quantità massima disponibile</p>
+                                <div class="d-flex justify-content-center mt-2">
                                     <button @click="aggiornaCarrello(prodotto.id, 'rimuovi')"
                                         class="btn btn-sm btn-primary"><i class="fa-solid fa-minus"></i></button>
                                     <span class="mx-3">{{ quantitaCarrello[prodotto.id] || 0 }}</span>
                                     <button @click="aggiornaCarrello(prodotto.id, 'aggiungi')"
+                                        :disabled="quantitaCarrello[prodotto.id] >= prodotto.quantita"
                                         class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i></button>
                                 </div>
+                                <!-- /Bottoni di aggiunta / rimozione dal carrello -->
                             </div>
                         </div>
                     </div>
