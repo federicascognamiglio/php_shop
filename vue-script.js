@@ -5,12 +5,14 @@ createApp({
 
         // Variabili ref
         const messaggio = ref("")
+        const messaggioOrdine = ref("");
         const prodotti = ref([])
         const numProdottiCarrello = ref(0)
         const dettagliCarrello = ref({});
         const subtotaleCarrello = ref(0);
         const totaleCarrello = ref(0);
         const scontato = ref(false);
+        const orderId = ref(null);
 
         // Oggetto reattivo per quantità specifica per prodotto nel carrello
         const quantitaCarrello = reactive({});
@@ -54,6 +56,11 @@ createApp({
                     let totale = 0;
                     for (const key in carrello) totale += carrello[key].quantita;
                     numProdottiCarrello.value = totale;
+
+                    // Se c'è almeno un prodotto, resetta il messaggio Ordine
+                    if (totale > 0) {
+                        messaggioOrdine.value = "";
+                    }
                 }
             } catch (error) {
                 console.error('Errore caricamento carrello:', error);
@@ -113,12 +120,18 @@ createApp({
 
         // Funzione per salvare l'ordine
         const salvaOrdine = async () => {
+            // Controlla se il carrello è vuoto
+            if (Object.keys(quantitaCarrello).length === 0) {
+                messaggioOrdine.value = "Il carrello è vuoto. Aggiungi almeno un prodotto per procedere all'ordine.";
+                return;
+            }
+
             try {
                 const articoli = Object.keys(dettagliCarrello.value).map(id => ({
                     prodotto_id: parseInt(id),
                     quantita: quantitaCarrello[id]
                 }));
-        
+
                 const res = await fetch("./api/salvaOrdine.php", {
                     method: "POST",
                     headers: {
@@ -126,29 +139,40 @@ createApp({
                     },
                     body: JSON.stringify({ articoli })
                 });
-        
+
                 const data = await res.json();
-        
+
                 if (data.success) {
-                    console.log("Ordine completato! ID ordine: " + data.order_id);
-        
-                    // Reset carrello lato client
+                    orderId.value = data.order_id;
+
+                    console.log("Ordine completato! ID ordine: " + orderId.value);
+
+                    // Reset carrello
                     dettagliCarrello.value = {};
                     for (const key in quantitaCarrello) delete quantitaCarrello[key];
                     numProdottiCarrello.value = 0;
                     subtotaleCarrello.value = 0;
                     totaleCarrello.value = 0;
                     scontato.value = false;
-        
+
+                    // Chiudi il modale del carrello
+                    const cartModalEl = document.getElementById('cartModal');
+                    const cartModal = bootstrap.Modal.getInstance(cartModalEl);
+                    if (cartModal) cartModal.hide();
+
+                    // Apri modale resoconto ordine
+                    const orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
+                    orderModal.show();
+
                 } else {
                     console.log("Errore: " + data.message);
                 }
-        
+
             } catch (err) {
                 console.log("Errore di rete: " + data.message);
             }
         };
-        
+
 
         // Carica i prodotti e carrello al montaggio del componente
         onMounted(async () => {
@@ -158,6 +182,7 @@ createApp({
 
         return {
             messaggio,
+            messaggioOrdine,
             prodotti,
             dettagliCarrello,
             numProdottiCarrello,
@@ -165,6 +190,7 @@ createApp({
             subtotaleCarrello,
             scontato,
             totaleCarrello,
+            orderId,
             aggiornaCarrello,
             salvaOrdine,
         }

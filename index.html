@@ -44,6 +44,45 @@
         </header>
         <!-- /Header -->
 
+        <!-- Main -->
+        <main>
+            <div class="container">
+                <h1 class="text-center mt-5">Benvenuto in PHP SHOP!</h1>
+                <p class="text-center mb-5">Qui puoi trovare una vasta gamma di prodotti.</p>
+                <!-- Catalogo -->
+                <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-4">
+                    <!-- Card Prodotti -->
+                    <div v-for="prodotto in prodotti" :key="prodotto.id" class="col mb-3">
+                        <div class="card h-100">
+                            <img src="https://placehold.co/600x400" class="card-img-top" alt="">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="card-title">{{ prodotto.nome }}</h5>
+                                    <span>&euro; {{ prodotto.prezzo.toFixed(2) }}</span>
+                                </div>
+                                <p class="text-muted">{{ prodotto.quantita }} disponibili</p>
+                                <!-- Bottoni di aggiunta / rimozione dal carrello -->
+                                <p v-if="quantitaCarrello[prodotto.id] >= prodotto.quantita" class="text-danger fs-6">
+                                    Hai raggiunto la quantità massima disponibile</p>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <button @click="aggiornaCarrello(prodotto.id, 'rimuovi')"
+                                        class="btn btn-sm btn-primary"><i class="fa-solid fa-minus"></i></button>
+                                    <span class="mx-3">{{ quantitaCarrello[prodotto.id] || 0 }}</span>
+                                    <button @click="aggiornaCarrello(prodotto.id, 'aggiungi')"
+                                        :disabled="quantitaCarrello[prodotto.id] >= prodotto.quantita"
+                                        class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                <!-- /Bottoni di aggiunta / rimozione dal carrello -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Card Prodotti -->
+                </div>
+                <!-- /Catalogo -->
+        </main>
+        <!-- /Main -->
+
+        <!-- Modali -->
         <!-- Modale Carello -->
         <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -94,54 +133,42 @@
                             </tfoot>
                         </table>
                         <!-- /Tabella prodotti carello -->
+
+                        <!-- Messaggio se il carrello è vuoto -->
+                        <p v-if="messaggioOrdine" class="text-center text-danger">{{ messaggioOrdine }}</p>
                     </div>
                     <!-- Bottoni salvataggio e chiusura -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                        <button type="button" class="btn btn-primary">Procedi all'ordine</button>
+                        <button @click="salvaOrdine" type="button" class="btn btn-primary">Procedi all'ordine</button>
                     </div>
                 </div>
             </div>
         </div>
         <!-- /Modale Carello -->
 
-        <!-- Main -->
-        <main>
-            <div class="container">
-                <h1 class="text-center mt-5">Benvenuto in PHP SHOP!</h1>
-                <p class="text-center mb-5">Qui puoi trovare una vasta gamma di prodotti.</p>
-                <!-- Catalogo -->
-                <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-4">
-                    <!-- Card Prodotti -->
-                    <div v-for="prodotto in prodotti" :key="prodotto.id" class="col mb-3">
-                        <div class="card h-100">
-                            <img src="https://placehold.co/600x400" class="card-img-top" alt="">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="card-title">{{ prodotto.nome }}</h5>
-                                    <span>&euro; {{ prodotto.prezzo.toFixed(2) }}</span>
-                                </div>
-                                <p class="text-muted">{{ prodotto.quantita }} disponibili</p>
-                                <!-- Bottoni di aggiunta / rimozione dal carrello -->
-                                <p v-if="quantitaCarrello[prodotto.id] >= prodotto.quantita" class="text-danger fs-6">
-                                    Hai raggiunto la quantità massima disponibile</p>
-                                <div class="d-flex justify-content-center mt-2">
-                                    <button @click="aggiornaCarrello(prodotto.id, 'rimuovi')"
-                                        class="btn btn-sm btn-primary"><i class="fa-solid fa-minus"></i></button>
-                                    <span class="mx-3">{{ quantitaCarrello[prodotto.id] || 0 }}</span>
-                                    <button @click="aggiornaCarrello(prodotto.id, 'aggiungi')"
-                                        :disabled="quantitaCarrello[prodotto.id] >= prodotto.quantita"
-                                        class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i></button>
-                                </div>
-                                <!-- /Bottoni di aggiunta / rimozione dal carrello -->
-                            </div>
-                        </div>
+        <!-- Modale Riepilogo Ordine -->
+        <!-- Modal -->
+        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="orderModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <!-- /Card Prodotti -->
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
                 </div>
-                <!-- /Catalogo -->
-        </main>
-        <!-- /Main -->
+            </div>
+        </div>
+
+        <!-- /Modale Riepilogo Ordine -->
+
     </div>
     <!-- /Vue App -->
 
