@@ -11,12 +11,17 @@ if (!isset($_SESSION['carrello'])) {
 }
 
 $carrello = $_SESSION['carrello'];
+$articoli = $carrello->getItems(); 
 
-try {
-    $items = $carrello->getItems();
+$subtotale = $carrello->getSubtotal();
+$totale = $carrello->getTotal($subtotale);
+$scontato = $carrello->hasDiscount($subtotale);
 
-    echo json_encode(['success' => true, 'carrello' => $items]);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-}
+echo json_encode([
+    'success' => true,
+    'carrello' => $articoli, 
+    'subtotale' => $subtotale,
+    'totale' => $totale,
+    'scontato' => $scontato
+]);
 ?>

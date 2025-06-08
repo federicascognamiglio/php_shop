@@ -8,6 +8,9 @@ createApp({
         const prodotti = ref([])
         const numProdottiCarrello = ref(0)
         const dettagliCarrello = ref({});
+        const subtotaleCarrello = ref(0);
+        const totaleCarrello = ref(0);
+        const scontato = ref(false);
 
         // Oggetto reattivo per quantità specifica per prodotto nel carrello
         const quantitaCarrello = reactive({});
@@ -31,6 +34,11 @@ createApp({
                 const data = await res.json();
                 if (data.success) {
                     const carrello = data.carrello;
+
+                    // Aggiorna lo stato del carrello
+                    subtotaleCarrello.value = data.subtotale;
+                    scontato.value = data.scontato;
+                    totaleCarrello.value = data.totale;
 
                     // reset quantità e dettagli
                     for (const key in quantitaCarrello) delete quantitaCarrello[key];
@@ -66,6 +74,11 @@ createApp({
                 if (data.success) {
                     const carrello = data.carrello;
 
+                    // Aggiorna lo stato del carrello
+                    subtotaleCarrello.value = data.subtotale;
+                    totaleCarrello.value = data.totale;
+                    scontato.value = data.scontato;
+
                     // Rimuove chiavi non più presenti nel carrello 
                     for (const key in quantitaCarrello) {
                         if (!carrello.hasOwnProperty(key)) {
@@ -86,6 +99,9 @@ createApp({
                         totale += carrello[key].quantita;
                     }
                     numProdottiCarrello.value = totale;
+
+                    // Aggiorna il carrello visualizzato
+                    await caricaCarrello();
                 } else {
                     console.log("Errore API:", data.message);
                 }
@@ -107,6 +123,9 @@ createApp({
             dettagliCarrello,
             numProdottiCarrello,
             quantitaCarrello,
+            subtotaleCarrello,
+            scontato,
+            totaleCarrello,
             aggiornaCarrello,
         }
     }
