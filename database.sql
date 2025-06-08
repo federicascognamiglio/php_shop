@@ -32,7 +32,7 @@ CREATE TABLE ordine_dettagli (
 
 -- Inserimento dati di esempio nella tabella Prodotti
 INSERT INTO prodotti (nome, prezzo, quantita) VALUES
-('Maglietta', 25.50, 10),
+('Maglietta', 25.50, 3),
 ('Pantaloni', 45.00, 8),
 ('Scarpe', 80.00, 15),
 ('Cappello', 15.00, 20),

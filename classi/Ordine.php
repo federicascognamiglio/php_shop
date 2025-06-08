@@ -11,37 +11,52 @@ class Ordine {
     /**
      * Salva un nuovo ordine nel database.
      * 
-     * @param Carrello $carrello Il carrello con i dati da salvare come ordine.
+     * @param Carrello $carrello Il carrello da cui creare l'ordine.
      * 
      * @return int L'ID dell'ordine appena creato.
      * 
-    */
+     * @throws Exception Se si verifica un errore durante il salvataggio dell'ordine.
+     * 
+     */
     public static function save(Carrello $carrello) {
-        $subtotale = $carrello->getSubtotal();
-        $scontoApplicato = $carrello->hasDiscount($subtotale);
-        $totale = $carrello->getTotal($subtotale);
-
-        // Salva ordine
-        $stmt = DB::conn()->prepare("INSERT INTO ordini (subtotale, sconto_applicato, totale) VALUES (?, ?, ?)");
-        $stmt->execute([$subtotale, $scontoApplicato ? 1 : 0, $totale]);
-        $ordine_id = DB::conn()->lastInsertId();
-
-        // Salva dettagli ordine
-        foreach ($carrello->getItems() as $item) {
-            $prodotto = $item['prodotto'];
-            $quantita = $item['quantita'];
-            $prezzo_unitario = $prodotto->prezzo;
-
-            $stmt = DB::conn()->prepare("INSERT INTO ordine_dettagli (ordine_id, prodotto_id, quantita, prezzo) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$ordine_id, $prodotto->id, $quantita, $prezzo_unitario]);
-
-            // Aggiorna disponibilità prodotto
-            Prodotto::updateQuantity($prodotto->id, $quantita);
+        $conn = DB::conn();
+        $conn->beginTransaction();
+    
+        try {
+            $subtotale = $carrello->getSubtotal();
+            $sconto = $carrello->hasDiscount($subtotale) ? 1 : 0;
+            $totale = $carrello->getTotal($subtotale);
+    
+            // Inserisci ordine
+            $stmt = $conn->prepare("INSERT INTO ordini (subtotale, sconto_applicato, totale) VALUES (?, ?, ?)");
+            $stmt->execute([$subtotale, $sconto, $totale]);
+    
+            $ordine_id = $conn->lastInsertId();
+    
+            // Inserisci ogni prodotto nella tabella ordine_dettagli
+            foreach ($carrello->getItems() as $item) {
+                $prodotto = $item['prodotto'];
+                $quantita = $item['quantita'];
+                $prezzo = $prodotto->prezzo;
+    
+                $stmt = $conn->prepare("INSERT INTO ordine_dettagli (ordine_id, prodotto_id, quantita, prezzo) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$ordine_id, $prodotto->id, $quantita, $prezzo]);
+    
+                // Aggiorna la quantità disponibile del prodotto
+                $stmt = $conn->prepare("UPDATE prodotti SET quantita = quantita - ? WHERE id = ?");
+                $stmt->execute([$quantita, $prodotto->id]);
+            }
+    
+            $conn->commit();
+            return $ordine_id;
+    
+        } catch (Exception $e) {
+            $conn->rollBack();
+            throw new Exception("Errore durante il salvataggio dell'ordine: " . $e->getMessage());
         }
-
-        return $ordine_id;
     }
-
+    
+    
     /**
      * Recupera i dettagli di un ordine specifico.
      * 

@@ -1,6 +1,5 @@
 <?php
 header('Content-Type: application/json');
-
 require_once '../classi/Carrello.php';
 require_once '../classi/Prodotto.php';
 
@@ -24,6 +23,7 @@ if (!$input || !isset($input['idProdotto']) || !isset($input['azione'])) {
 
 $idProdotto = (int)$input['idProdotto'];
 $azione = $input['azione'];
+
 
 try {
     $prodotto = Prodotto::find($idProdotto);

@@ -102,6 +102,7 @@ createApp({
 
                     // Aggiorna il carrello visualizzato
                     await caricaCarrello();
+
                 } else {
                     console.log("Errore API:", data.message);
                 }
@@ -110,6 +111,44 @@ createApp({
             }
         };
 
+        // Funzione per salvare l'ordine
+        const salvaOrdine = async () => {
+            try {
+                const articoli = Object.keys(dettagliCarrello.value).map(id => ({
+                    prodotto_id: parseInt(id),
+                    quantita: quantitaCarrello[id]
+                }));
+        
+                const res = await fetch("./api/salvaOrdine.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ articoli })
+                });
+        
+                const data = await res.json();
+        
+                if (data.success) {
+                    alert("Ordine completato! ID ordine: " + data.order_id);
+        
+                    // Reset carrello lato client (opzionale: fare anche chiamata per svuotarlo lato server)
+                    dettagliCarrello.value = {};
+                    for (const key in quantitaCarrello) delete quantitaCarrello[key];
+                    numProdottiCarrello.value = 0;
+                    subtotaleCarrello.value = 0;
+                    totaleCarrello.value = 0;
+                    scontato.value = false;
+        
+                } else {
+                    alert("Errore: " + data.message);
+                }
+        
+            } catch (err) {
+                alert("Errore di rete: " + err.message);
+            }
+        };
+        
 
         // Carica i prodotti e carrello al montaggio del componente
         onMounted(async () => {
@@ -127,6 +166,7 @@ createApp({
             scontato,
             totaleCarrello,
             aggiornaCarrello,
+            salvaOrdine,
         }
     }
 
