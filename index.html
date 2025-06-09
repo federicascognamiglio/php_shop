@@ -61,6 +61,7 @@
                                     Hai raggiunto la quantità massima disponibile</p>
                                 <div class="d-flex justify-content-center mt-2">
                                     <button @click="aggiornaCarrello(prodotto.id, 'rimuovi')"
+                                        :disabled="(quantitaCarrello[prodotto.id] || 0) <= 0"
                                         class="btn btn-sm btn-primary"><i class="fa-solid fa-minus"></i></button>
                                     <span class="mx-3">{{ quantitaCarrello[prodotto.id] || 0 }}</span>
                                     <button @click="aggiornaCarrello(prodotto.id, 'aggiungi')"

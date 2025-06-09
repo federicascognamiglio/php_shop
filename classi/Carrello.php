@@ -39,11 +39,11 @@ class Carrello {
         if (!isset($this->articoli[$prodotto->id])) {
             throw new Exception("Prodotto non presente nel carrello.");
         }
-    
-        $this->articoli[$prodotto->id]['quantita'] -= $quantita;
         if ($this->articoli[$prodotto->id]['quantita'] <= 1) {
             unset($this->articoli[$prodotto->id]);
         }
+    
+        $this->articoli[$prodotto->id]['quantita'] -= $quantita;
     }
     
     /**
